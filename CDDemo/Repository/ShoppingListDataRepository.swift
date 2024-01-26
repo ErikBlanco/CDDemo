@@ -40,10 +40,8 @@ struct ShoppingListDataRepository: ShoppingListRepository {
         let result = PersistentStorage.shared.fetchManagedObject(managedObject: CDShoppingList.self)
         var shoppingLists: [ShoppingList] = []
         
-        result?.forEach({ cdShoppingList in
-            shoppingLists.append(cdShoppingList.convertToShoppingList())
-        })
-        
+        shoppingLists.append(contentsOf: result?.map { $0.convertToShoppingList() } ?? [])
+
         return shoppingLists
     }
     
@@ -55,9 +53,7 @@ struct ShoppingListDataRepository: ShoppingListRepository {
         var shoppingLists: [ShoppingList] = []
         do {
             let result = try PersistentStorage.shared.context.fetch(fetchRequest)
-            result.forEach({ cdShoppingList in
-                shoppingLists.append(cdShoppingList.convertToShoppingList())
-            })
+            shoppingLists.append(contentsOf: result.map { $0.convertToShoppingList() })
         } catch {
             debugPrint(error)
         }
